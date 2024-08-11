@@ -10,23 +10,26 @@ from functools import reduce
 import discord
 from discord.ext import tasks
 
-from messagegen import MessageGenConfig, MessageGenPrompt, MessageGen
+from messagegen import MessageGenConfig, MessageGen
 
 # BOTのトークン
 # BOT_TOKEN=os.getenv('NARIKIRI_BOT_TOKEN')
 
 # ループ間隔 デフォルトは30分
-LOOP_INTERVAL=os.getenv('NARIKIRI_LOOP_INTERVAL', 1800)
+LOOP_INTERVAL = os.getenv('NARIKIRI_LOOP_INTERVAL', 1800)
 
 # 設定ファイル読込
-#def load_config():
-#    fp = open(common.CONFIG_PATH, 'r', encoding="utf-8")
-#
-#    data =json.load(fp)
-#
-#    fp.close()
 
-#    return data
+
+def load_file(file_path):
+    fp = open(file_path, 'r', encoding="utf-8")
+
+    data = json.load(fp)
+
+    fp.close()
+
+    return data
+
 
 class MainClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -38,7 +41,7 @@ class MainClient(discord.Client):
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
 
-    @tasks.loop(seconds=LOOP_INTERVAL) 
+    @tasks.loop(seconds=LOOP_INTERVAL)
     async def background_task(self):
         pass
 
@@ -49,15 +52,17 @@ class MainClient(discord.Client):
     async def on_message(self, message):
         return
 
+
 def main():
     # its = discord.Intents.default()
     # its.message_content = True
     # client = MainClient(intents=its)
     # client.run(BOT_TOKEN)
     # openai起動
-    messagegen = MessageGen(MessageGenConfig(), MessageGenPrompt("", "", ""))
+    with open("prompt/default.txt", 'r', encoding="utf-8") as f:
+        prompt = f.read()
 
-    print(messagegen.reply_gen())
+    messagegen = MessageGen(MessageGenConfig(), prompt)
 
 
 
