@@ -13,27 +13,17 @@ from discord.ext import tasks
 from messagegen import MessageGenConfig, MessageGen
 
 # BOTのトークン
-# BOT_TOKEN=os.getenv('NARIKIRI_BOT_TOKEN')
+BOT_TOKEN=os.getenv('NARIKIRI_BOT_TOKEN')
 
 # ループ間隔 デフォルトは30分
 LOOP_INTERVAL = os.getenv('NARIKIRI_LOOP_INTERVAL', 1800)
 
-# 設定ファイル読込
-
-
-def load_file(file_path):
-    fp = open(file_path, 'r', encoding="utf-8")
-
-    data = json.load(fp)
-
-    fp.close()
-
-    return data
-
 
 class MainClient(discord.Client):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, messagegen, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.messagegen = messagegen
+
 
     async def setup_hook(self) -> None:
         self.background_task.start()
@@ -50,19 +40,55 @@ class MainClient(discord.Client):
         await self.wait_until_ready()  # wait until the bot logs in
 
     async def on_message(self, message):
+        if message.mention_everyone:
+            return
+        
+        if not message.mentions:
+            return
+        
+
+
+
         return
 
-
 def main():
-    # its = discord.Intents.default()
-    # its.message_content = True
-    # client = MainClient(intents=its)
-    # client.run(BOT_TOKEN)
+    # 起動時引数からキャラクターキーを取得
+    args = sys.argv
+    if len(args) <=1:
+        print("usage: python main.py (character_key)")
+        return
+
+    character_key = args[1]
+
+    # JSON形式のファイル読み込み
+    with open("prompt/common_cfg.json", 'r', encoding="utf-8") as f:
+        config = json.load(f)
+
+    target_character = {}
+    valid_key = False
+
+    for character in config.characters:
+        # もしキャラクターキーもしくは
+        if character_key == character.key or character_key in character.alias:
+            target_character = character
+            valid_key = True
+
+    if not valid_key:
+        print("invalid character_key error")
+        return
+
     # openai起動
-    with open("prompt/default.txt", 'r', encoding="utf-8") as f:
+    with open("prompt/"+target_character.key+ ".txt", 'r', encoding="utf-8") as f:
         prompt = f.read()
 
     messagegen = MessageGen(MessageGenConfig(), prompt)
+
+
+    its = discord.Intents.default()
+    its.message_content = True
+    client = MainClient(messagegen, intents=its)
+    client.run(BOT_TOKEN)
+
 
 
 
