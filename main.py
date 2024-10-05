@@ -40,13 +40,27 @@ class MainClient(discord.Client):
         await self.wait_until_ready()  # wait until the bot logs in
 
     async def on_message(self, message):
+        if message.author.bot:
+            return
+        if message.author == self.user:
+            return
+
         if message.mention_everyone:
             return
         
-        if not message.mentions:
+        if self.user in message.mentions:
+            question_message = message.content.replace("<@" + str(self.user.id) + ">","")
+
+            print("質問メッセージ：" + question_message)
+
+            reply_message = self.messagegen.reply_gen(question_message, [])
+
+            print("回答メッセージ："+reply_message)
+
+            await message.channel.send(reply_message)
+
             return
         
-
 
 
         return
@@ -61,15 +75,15 @@ def main():
     character_key = args[1]
 
     # JSON形式のファイル読み込み
-    with open("prompt/common_cfg.json", 'r', encoding="utf-8") as f:
+    with open("config/common_cfg.json", 'r', encoding="utf-8") as f:
         config = json.load(f)
 
     target_character = {}
     valid_key = False
 
-    for character in config.characters:
+    for character in config['characters']:
         # もしキャラクターキーもしくは
-        if character_key == character.key or character_key in character.alias:
+        if character_key == character['key'] or character_key in character['alias']:
             target_character = character
             valid_key = True
 
@@ -78,7 +92,7 @@ def main():
         return
 
     # openai起動
-    with open("prompt/"+target_character.key+ ".txt", 'r', encoding="utf-8") as f:
+    with open("prompt/"+target_character['key']+ ".txt", 'r', encoding="utf-8") as f:
         prompt = f.read()
 
     messagegen = MessageGen(MessageGenConfig(), prompt)

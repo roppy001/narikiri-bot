@@ -1,9 +1,9 @@
 {
     "characters" : [
         {
-            "key" : "default",
+            "key" : "rice",
             "name" : "デフォルト",
-            "alias" : []
+            "alias" : ["riceshower","ライスシャワー"]
         }
     ]
 }
