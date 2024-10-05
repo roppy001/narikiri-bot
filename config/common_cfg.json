@@ -2,8 +2,21 @@
     "characters" : [
         {
             "key" : "rice",
-            "name" : "デフォルト",
+            "name" : "ライスシャワー",
+            "token" : "RICE_BOT_TOKEN",
             "alias" : ["riceshower","ライスシャワー"]
+        },
+        {
+            "key" : "machitan",
+            "name" : "マチカネタンホイザ",
+            "token" : "MACHITAN_BOT_TOKEN",
+            "alias" : ["マチカネタンホイザ"]
+        },
+        {
+            "key" : "tarumae",
+            "name" : "ホッコータルマエ",
+            "token" : "TARUMAE_BOT_TOKEN",
+            "alias" : ["hokkotarumae","ホッコータルマエ"]
         }
     ]
 }

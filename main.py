@@ -12,9 +12,6 @@ from discord.ext import tasks
 
 from messagegen import MessageGenConfig, MessageGen
 
-# BOTのトークン
-BOT_TOKEN=os.getenv('NARIKIRI_BOT_TOKEN')
-
 # ループ間隔 デフォルトは30分
 LOOP_INTERVAL = os.getenv('NARIKIRI_LOOP_INTERVAL', 1800)
 
@@ -60,8 +57,6 @@ class MainClient(discord.Client):
             await message.channel.send(reply_message)
 
             return
-        
-
 
         return
 
@@ -74,7 +69,7 @@ def main():
 
     character_key = args[1]
 
-    # JSON形式のファイル読み込み
+    # 設定ファイル読み込み
     with open("config/common_cfg.json", 'r', encoding="utf-8") as f:
         config = json.load(f)
 
@@ -82,10 +77,13 @@ def main():
     valid_key = False
 
     for character in config['characters']:
-        # もしキャラクターキーもしくは
+        # キャラクターキーもしくはエイリアスに一致するかでキャラを選択
         if character_key == character['key'] or character_key in character['alias']:
             target_character = character
             valid_key = True
+
+    #設定ファイルの環境変数名からbotのトークン値を取得
+    token = os.getenv(target_character['token'])
 
     if not valid_key:
         print("invalid character_key error")
@@ -101,7 +99,7 @@ def main():
     its = discord.Intents.default()
     its.message_content = True
     client = MainClient(messagegen, intents=its)
-    client.run(BOT_TOKEN)
+    client.run(token)
 
 
 
