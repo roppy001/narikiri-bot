@@ -17,6 +17,15 @@
             "name" : "ホッコータルマエ",
             "token" : "TARUMAE_BOT_TOKEN",
             "alias" : ["hokkotarumae","ホッコータルマエ"]
+        },
+        
+        
+        
+        {
+            "key" : "karyl",
+            "name" : "キャル",
+            "token" : "KARYL_BOT_TOKEN",
+            "alias" : ["キャル"]
         }
     ]
 }
